@@ -1,0 +1,24 @@
+{
+    "name": "@payline/sdk",
+    "version": "0.1.0",
+    "description": "The official Payline SDK",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "files": [
+        "dist"
+    ],
+    "scripts": {
+        "build": "tsc",
+        "prepublishOnly": "npm run build"
+    },
+    "keywords": [
+        "payline",
+        "reconciliation",
+        "fintech"
+    ],
+    "author": "Payline",
+    "license": "ISC",
+    "devDependencies": {
+        "typescript": "^5.9.3"
+    }
+}

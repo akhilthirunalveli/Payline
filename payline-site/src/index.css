@@ -1,0 +1,76 @@
+@import "tailwindcss";
+
+@import '@fontsource/inter/400.css';
+@import '@fontsource/inter/600.css';
+@import '@fontsource/oswald/400.css';
+@import '@fontsource/oswald/500.css';
+@import '@fontsource/oswald/700.css';
+@import '@fontsource/dm-mono/400.css';
+@import '@fontsource/dm-mono/500.css';
+
+@theme {
+  --color-background: #000000;
+  --color-surface: #111111;
+  --color-primary: #ccff00;
+  --color-secondary: #ffffff;
+  --color-muted: #444444;
+  --color-error: #ff3333;
+  --color-success: #00ff00;
+
+  --font-sans: 'Inter', sans-serif;
+  --font-heading: 'Oswald', sans-serif;
+  --font-mono: 'DM Mono', monospace;
+
+  --background-image-grid-pattern: linear-gradient(to right, #222 1px, transparent 1px), linear-gradient(to bottom, #222 1px, transparent 1px);
+}
+
+/* Custom Utilities that use the theme */
+@layer utilities {
+  .bg-grid {
+    background-size: 40px 40px;
+    background-image:
+      linear-gradient(to right, #111 1px, transparent 1px),
+      linear-gradient(to bottom, #111 1px, transparent 1px);
+  }
+}
+
+/* Base Styles */
+@layer base {
+  body {
+    @apply font-sans antialiased bg-background text-secondary;
+    /* Selection styles can be pure CSS if needed, or utility based */
+  }
+
+  ::selection {
+    background-color: var(--color-primary);
+    color: black;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-heading uppercase tracking-tighter;
+  }
+
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--color-background);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-muted);
+    border-radius: 0;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-secondary);
+  }
+}

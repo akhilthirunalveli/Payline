@@ -1,93 +1,78 @@
-# Payment Reconciliation System
+# Payline
 
-A production-grade backend system to reconcile internal payment records with bank/payment-gateway statements.
+> **The Reconciliation Engine** — A high-performance node.js system for untangling financial data.
 
-## Features
-- **Payment Recording**: Idempotent API to record internal payments via `POST /payments`.
-- **Statement Ingestion**: Upload CSV bank/gateway statements via `POST /statements/import`.
-- **Reconciliation Engine**: Matches payments by Reference (strong) or Amount + Time (fuzzy). **Scalable batch processing** handles large datasets via cursors.
-- **Reporting**: Generate daily reports and mismatch lists.
+![Payline Dashboard](payline-site/public/homepage.png)
+
+## Overview
+
+Payline is an opinionated, production-grade reconciliation backend designed to be the single source of truth for your financial operations. It acts as the middleware between your internal ledger (orders, subscriptions) and external financial institutions (Stripe, Adyen, Bank Feeds).
+
+It solves the "N+1" problem of payments: **One internal transaction may equal N bank events (settlement, refund, chargeback, fee).**
+
+## Core Features
+
+-   **Multi-Source Ingestion:** Universal adapter pattern for ingesting CSVs (MT940, CAMT.053) and API Webhooks.
+-   **Heuristic Matching Engine:**
+    -   **Strong Match:** Strict mapping by `payment_reference` or `idempotency_key`.
+    -   **Fuzzy Match:** Heuristic clustering based on `amount` + `date_window` + `currency`.
+-   **Idempotent Ledger:** Double-entry accounting principles enforced at the database level.
+-   **Scalable Architecture:** Built on Fastify and Knex Streams to handle high-volume datasets with minimal memory footprint.
 
 ## Architecture
-- **Language**: Node.js + TypeScript
-- **Framework**: Fastify
-- **Database**: PostgreSQL
-- **Query Builder**: Knex.js
-- **Validation**: Zod
-- **Time**: Day.js
 
-### Database Schema
-- `internal_payments`: Stores application-side payment records.
-- `bank_statements`: Stores rows from imported bank CSVs.
-- `reconciliations`: Stores match results (1-to-1 link between payment and statement).
+The system is built as a monolithic modular backend.
 
-## Prerequisities
-- Node.js >= 18
-- PostgreSQL (or run via Docker)
+-   **Runtime:** Node.js (TypeScript)
+-   **Framework:** Fastify (Lightweight, Low Overhead)
+-   **Database:** PostgreSQL (ACID Compliance is mandatory)
+-   **ORM/Query Builder:** Knex.js (SQL-first approach)
+-   **Validation:** Zod (Runtime type safety)
 
-## Getting Started
+### Data Flow
 
-1. **Install Dependencies**
-   ```bash
-   npm install
-   ```
+```mermaid
+graph LR
+    A[Payment Gateway] -->|Webhook/CSV| B(Ingest Service)
+    C[Internal App] -->|API Call| B
+    B --> D{Matching Engine}
+    D -->|Matched| E[Reconciled Table]
+    D -->|Unmatched| F[Exception Queue]
+```
 
-2. **Start Database**
-   ```bash
-   docker-compose up -d
-   ```
-   Or configure `knexfile.ts` with your local Postgres credentials.
+## API Quick Reference
 
-3. **Run Migrations**
-   ```bash
-   npm run migrate:latest
-   ```
-
-4. **Start Server**
-   ```bash
-   npm run dev
-   ```
-
-## API Usage
-
-### 1. Create Payment
-```http
-POST /payments
-Idempotency-Key: unique-req-123
-Content-Type: application/json
-
+### 1. Record Internal Payment
+`POST /payments`
+```json
 {
   "order_id": "ORD-1001",
-  "user_id": "user_55",
   "amount": 500.00,
-  "currency": "USD",
-  "method": "CARD",
-  "gateway_reference": "ref_12345"
+  "gateway_reference": "ch_3N5..."
 }
 ```
 
-### 2. Import Statement
-```http
-POST /statements/import
-Content-Type: text/csv
-
-bank_reference,amount,narration,credited_at,source
-ref_12345,500.00,Payment for ORD-1001,2024-01-01T10:00:00Z,GATEWAY
-```
+### 2. Ingest Bank Statement
+`POST /statements/import`
+Upload raw CSVs from your banking partners. The system automatically normalizes them.
 
 ### 3. Run Reconciliation
-```http
-POST /reconcile/run
-```
+`POST /reconcile/run`
+Triggers the matching algorithm. Returns a summary of matched vs. unmatched items.
 
-### 4. Get Report
-```http
-GET /reconciliation/report?date=2024-01-01
-```
+## Getting Started
 
 ```bash
-npm test
+# 1. Install dependencies
+npm install
+
+# 2. Run Migrations
+npm run migrate:latest
+
+# 3. Start the Engine
+npm run dev
 ```
-The project includes a comprehensive test suite using **Jest**:
-- **Unit Tests**: Cover the core reconciliation logic (Strong match, Fuzzy match, Amount mismatch).
-- **API Tests**: Verify route availability and validation.
+
+---
+
+_The `payline-site` directory contains a React-based visualizer for this engine.
