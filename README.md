@@ -1,6 +1,8 @@
 # Payline  
 
-> **Multi-Tier Supply Chain Fraud Detection & Management Engine** — A high-performance Node.js system for detecting, tracing, and mitigating fraud across complex supplier networks.
+> **Multi-Tier Supply Chain Fraud Detection & Management Engine** — A high-performance Node.js system for detecting, tracing, and mitigating fraud across complex supplier networks.  
+
+![Payline Dashboard](payline-site/public/homepage.png)
 
 ---
 
@@ -203,4 +205,33 @@ Returns:
 - Graph-based linking for anomaly detection  
 - High performance and scalable backend  
 - Production-ready architecture  
-- Built for real-world datasets
+- Built for real-world datasets  
+
+---
+
+## Getting Started  
+
+```bash
+# 1. Install dependencies
+npm install
+
+# 2. Run database migrations
+npm run migrate:latest
+
+# 3. Start the engine
+npm run dev
+```
+
+---
+
+## Future Scope  
+
+- Machine learning anomaly detection  
+- Real-time streaming pipeline (Kafka integration)  
+- Blockchain-based supplier verification  
+- AI-assisted investigation summaries  
+- Risk heatmap visualization  
+
+---
+
+**Payline — Bringing transparency and intelligence to complex supply chains.**
